@@ -1,0 +1,33 @@
+description: >-
+  Build a Python log-analysis package. Each operations/ID.py exports run(data),
+  returns a JSON-compatible value, and must not mutate its input. app.py is the
+  fixed public CLI driver: python app.py ID accepts a JSON array of inputs on
+  stdin and prints the array of results. Implement the fixed tickets; use peers
+  and actual evaluation evidence. The driver and institution are not editable.
+scaffold: scaffold
+tickets:
+  - id: lower
+    description: "operations/lower.py: run(list[str]) returns the strings lowercased, preserving order."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: [ERROR, Warn, info], expected: [error, warn, info]}
+      - {input: [], expected: []}
+  - id: total
+    description: "operations/total.py: run(list[number]) returns the arithmetic sum; empty input returns 0."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: [1, 2, 3], expected: 6}
+      - {input: [], expected: 0}
+      - {input: [-2, 4], expected: 2}
+  - id: summary
+    description: >-
+      operations/summary.py: run({"levels": list[str], "values": list[number]})
+      returns {"levels": lowercased strings, "total": sum}. Reuse the public
+      lower and total operation modules where appropriate.
+    scope: integration
+    dependencies: [lower, total]
+    cases:
+      - {input: {levels: [ERROR, Info], values: [2, 3]}, expected: {levels: [error, info], total: 5}}
+      - {input: {levels: [], values: []}, expected: {levels: [], total: 0}}

@@ -1,0 +1,5 @@
+extends: smoke.yaml
+name: controlled-worker-outage
+population: 3
+concurrency: 3
+deadline_seconds: 600

@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "institution-lab"
+version = "0.1.0"
+description = "Configurable institutions for societies of existing AI coding agents."
+requires-python = ">=3.11"
+dependencies = [
+  "github-copilot-sdk>=1.0.28,<2",
+  "pydantic>=2.10,<3",
+  "PyYAML>=6,<7",
+  "typer>=0.15,<1",
+  "rich>=13,<16",
+  "jinja2>=3.1,<4",
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1",
+  "httpx>=0.28,<1",
+  "jsonpatch>=1.33,<2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.11,<1", "pyright>=1.1.400,<2"]
+research = [
+  "matplotlib>=3.9,<4", "numpy>=2,<3", "reportlab>=4,<5", "pypdf>=5,<7",
+  "defusedxml>=0.7,<1", "lxml>=5,<7",
+  "Pillow>=10,<13", "pypdfium2==5.0.0",
+]
+
+[project.scripts]
+institution-lab = "institution_lab.cli:app"
+eusoc = "institution_lab.cli:interactive_main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/institution_lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pyright]
+include = ["src"]
+exclude = ["runs", ".venv", "web"]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.11"
+typeCheckingMode = "basic"

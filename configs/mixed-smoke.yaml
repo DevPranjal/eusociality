@@ -1,0 +1,6 @@
+extends: smoke.yaml
+name: mixed-model-smoke
+model_overrides:
+  worker-01:
+    model: gpt-6.1-terra
+    reasoning_effort: medium

@@ -1,0 +1,8 @@
+extends: base.yaml
+name: scale-10-institutional
+population: 10
+concurrency: 4
+deadline_seconds: 1800
+max_activations: 20
+runtime:
+  max_ai_credits: 120

@@ -1,0 +1,5 @@
+.home/
+.tmp/
+.notes/
+__pycache__/
+*.pyc

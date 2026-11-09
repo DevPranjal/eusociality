@@ -1,0 +1,40 @@
+{
+  "name": "institution-lab-observer-assets",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node build.mjs",
+    "astryx": "node node_modules/@astryxdesign/cli/clients/cli/bin/astryx.mjs",
+    "vendor": "node build.mjs",
+    "test:functional": "node functional.mjs",
+    "test:timeline": "node timeline-functional.mjs",
+    "capture:terminal": "node terminal-screenshots.mjs"
+  },
+  "dependencies": {
+    "@astryxdesign/core": "0.7.5-canary.fccd771",
+    "@astryxdesign/theme-neutral": "0.7.5-canary.fccd771",
+    "@fontsource-variable/dm-sans": "^5.0.0",
+    "@fontsource-variable/manrope": "^5.0.0",
+    "@stylexjs/stylex": "^0.19.0",
+    "cn": "^0.5.1",
+    "class-variance-authority": "0.7.1",
+    "lucide-react": "1.65.0",
+    "cytoscape": "3.33.1",
+    "radix-ui": "^1.8.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@astryxdesign/cli": "0.7.5-canary.fccd771",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/cytoscape": "^3.21.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "playwright-core": "1.56.1",
+    "shadcn": "4.23.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "latest",
+    "vite": "^6.0.0"
+  }
+}

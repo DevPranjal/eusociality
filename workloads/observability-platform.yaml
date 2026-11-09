@@ -1,0 +1,460 @@
+description: >-
+  Build a synthetic service-observability analytics platform with 64 operations,
+  layered dependencies, time-series analysis, graph algorithms, incident ranking
+  and composed dashboards. Each operations/ID.py exports run(data), returns
+  JSON-compatible output and must not mutate inputs. app.py is the fixed JSON
+  CLI; do not edit it. Use only the Python standard library. Reuse integrated
+  operations through relative imports where useful; synchronize published
+  dependencies before implementing compositions. Ticket descriptions define
+  the contracts; evaluation cases are protected. Numeric rates, means and scores
+  must be rounded to six decimal places unless a ticket specifies otherwise.
+  Graph node names and grouping keys are strings. Event timestamps are integer
+  epoch seconds. All workloads and data are synthetic. Coordinate ownership,
+  independent review and integration through the institution, not direct edits
+  to its state. No particular worker is assigned a leadership role.
+scaffold: scaffold
+tickets:
+  - id: parse_jsonl
+    description: "run(str): parse nonblank JSON lines into an array, preserving order."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: "{\"id\":\"a\"}\n\n{\"id\":\"b\"}\n", expected: [{id: a}, {id: b}]}
+      - {input: "", expected: []}
+  - id: parse_csv
+    description: "run(str): header-bearing CSV to dictionaries of string values using standard CSV quoting."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: "service,message\napi,\"a,b\"\ndb,ok\n", expected: [{service: api, message: "a,b"}, {service: db, message: ok}]}
+      - {input: "service,message\n", expected: []}
+  - id: normalize_events
+    description: >-
+      run(list[object]): copy each event. Strip/lowercase its string service
+      (missing or blank becomes 'unknown'); strip/uppercase string level
+      (missing or blank becomes 'INFO'). Add missing duration_ms=0, status=200
+      and timestamp=0. Existing numeric fields and all other fields are preserved.
+    scope: foundation
+    dependencies: []
+    cases:
+      - input:
+          - {id: a, service: " API ", level: info, duration_ms: 10, status: 200, timestamp: 0, user: u1, route: /x}
+          - {id: b, service: api, level: error, duration_ms: 90, status: 500, timestamp: 60, user: u1, route: /x}
+          - {id: c, service: DB, level: warn, duration_ms: 30, status: 200, timestamp: 120, user: u2, route: /q}
+          - {id: d, service: api, level: INFO, duration_ms: 20, status: 200, timestamp: 180, user: u1, route: /x}
+        expected: &events
+          - {id: a, service: api, level: INFO, duration_ms: 10, status: 200, timestamp: 0, user: u1, route: /x}
+          - {id: b, service: api, level: ERROR, duration_ms: 90, status: 500, timestamp: 60, user: u1, route: /x}
+          - {id: c, service: db, level: WARN, duration_ms: 30, status: 200, timestamp: 120, user: u2, route: /q}
+          - {id: d, service: api, level: INFO, duration_ms: 20, status: 200, timestamp: 180, user: u1, route: /x}
+      - {input: [{}], expected: [{service: unknown, level: INFO, duration_ms: 0, status: 200, timestamp: 0}]}
+      - {input: [], expected: []}
+  - id: dedup_events
+    description: "run(list[object]): keep the last occurrence of each present id, ordered by that occurrence's position; rows without id are all retained."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: [{id: a, v: 1}, {id: b, v: 2}, {id: a, v: 3}, {v: 4}], expected: [{id: b, v: 2}, {id: a, v: 3}, {v: 4}]}
+      - {input: [], expected: []}
+  - id: filter_records
+    description: "run({rows,field,value}): retain rows containing field equal to value, preserving order. Missing fields never match, even for null."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: {rows: [{x: null}, {}, {x: 2}], field: x, value: null}, expected: [{x: null}]}
+      - {input: {rows: [], field: x, value: 1}, expected: []}
+  - id: project_records
+    description: "run({rows,fields}): project each row to requested existing keys; omit absent keys."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: {rows: [{a: 1, b: 2}, {b: 3}], fields: [a]}, expected: [{a: 1}, {}]}
+      - {input: {rows: [], fields: [a]}, expected: []}
+  - id: sort_records
+    description: "run({rows,key,descending?}): stable sort by a present comparable key; descending defaults false."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: {rows: [{v: 2, id: a}, {v: 1, id: b}, {v: 2, id: c}], key: v, descending: true}, expected: [{v: 2, id: a}, {v: 2, id: c}, {v: 1, id: b}]}
+      - {input: {rows: [], key: v}, expected: []}
+  - id: group_records
+    description: "run({rows,key}): map each present string key value to its rows in input order; omit rows missing key."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: {rows: [{k: a, v: 1}, {}, {k: a, v: 2}, {k: b}], key: k}, expected: {a: [{k: a, v: 1}, {k: a, v: 2}], b: [{k: b}]}}
+      - {input: {rows: [], key: k}, expected: {}}
+  - id: count_values
+    description: "run(list[str]): frequency dictionary."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [a, b, a], expected: {a: 2, b: 1}}, {input: [], expected: {}}]
+  - id: sum_values
+    description: "run(list[number]): arithmetic sum; empty yields 0."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [2, -1, 0.5], expected: 1.5}, {input: [], expected: 0}]
+  - id: mean_values
+    description: "run(list[number]): arithmetic mean rounded to six decimals; empty yields 0."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [1, 1, 2], expected: 1.333333}, {input: [], expected: 0}]
+  - id: minmax_values
+    description: "run(list[number]): {min,max}; both null for empty input."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [4, -2, 1], expected: {min: -2, max: 4}}, {input: [], expected: {min: null, max: null}}]
+  - id: percentile
+    description: "run({values,p}): nearest-rank percentile: sorted values[max(0,ceil(p*n/100)-1)] for p in [0,100]; empty yields null."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: {values: [10, 90, 30, 20], p: 50}, expected: 20}
+      - {input: {values: [10, 90, 30, 20], p: 95}, expected: 90}
+      - {input: {values: [], p: 95}, expected: null}
+  - id: utc_seconds
+    description: "run(list[str]): ISO8601 offset-bearing timestamps to integer UTC epoch seconds; trailing Z is accepted."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: ["1970-01-01T01:01:00+01:00", "1970-01-01T00:00:00Z"], expected: [60, 0]}
+      - {input: [], expected: []}
+  - id: time_buckets
+    description: "run({timestamps,width}): map each integer timestamp to floor(timestamp/positive width)*width, including negative timestamps."
+    scope: foundation
+    dependencies: []
+    cases: [{input: {timestamps: [-1, 0, 59, 60, 121], width: 60}, expected: [-60, 0, 0, 60, 120]}, {input: {timestamps: [], width: 60}, expected: []}]
+  - id: status_class
+    description: "run(list[int]): HTTP status class strings '2xx', '4xx', etc. Status outside 100..599 yields 'other'."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [200, 404, 503, 99, 600], expected: [2xx, 4xx, 5xx, other, other]}, {input: [], expected: []}]
+  - id: unique_values
+    description: "run(list[str]): remove duplicates preserving first occurrence order."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [b, a, b], expected: [b, a]}, {input: [], expected: []}]
+  - id: redact_records
+    description: "run({rows,fields}): copy rows and replace present named fields with '[REDACTED]'; do not add absent fields."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: {rows: [{token: synthetic, x: 1}, {x: 2}], fields: [token]}, expected: [{token: "[REDACTED]", x: 1}, {x: 2}]}
+      - {input: {rows: [], fields: [token]}, expected: []}
+  - id: top_values
+    description: "run({values:list[str],limit}): [{value,count}] by decreasing frequency then ascending value; truncate to nonnegative limit."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: {values: [b, a, b, a, c], limit: 2}, expected: [{value: a, count: 2}, {value: b, count: 2}]}
+      - {input: {values: [a], limit: 0}, expected: []}
+  - id: adjacency
+    description: "run({nodes:list[str],edges:list[[source,target]]}): directed adjacency map including isolated nodes and all edge endpoints; neighbors sorted and deduplicated."
+    scope: foundation
+    dependencies: []
+    cases:
+      - {input: {nodes: [a, b, c], edges: [[a, b], [a, b], [b, d]]}, expected: {a: [b], b: [d], c: [], d: []}}
+      - {input: {nodes: [], edges: []}, expected: {}}
+  - id: service_counts
+    description: "run(events): normalize events then return frequency counts by service."
+    scope: feature
+    dependencies: [normalize_events, group_records, count_values]
+    cases: [{input: *events, expected: {api: 3, db: 1}}, {input: [], expected: {}}]
+  - id: level_counts
+    description: "run(events): normalize events then return frequency counts by level."
+    scope: feature
+    dependencies: [normalize_events, count_values]
+    cases: [{input: *events, expected: {INFO: 2, ERROR: 1, WARN: 1}}, {input: [], expected: {}}]
+  - id: error_events
+    description: "run(events): normalize then retain rows with status >=500 OR level ERROR/FATAL, preserving order without duplicates."
+    scope: feature
+    dependencies: [normalize_events, filter_records]
+    cases:
+      - input: *events
+        expected: [{id: b, service: api, level: ERROR, duration_ms: 90, status: 500, timestamp: 60, user: u1, route: /x}]
+      - {input: [], expected: []}
+  - id: duration_stats
+    description: "run(list[number]): {count,total,mean,min,max,p50,p95}; empty count/total/mean=0, remaining fields null. Percentiles use nearest-rank."
+    scope: feature
+    dependencies: [sum_values, mean_values, minmax_values, percentile]
+    cases:
+      - {input: [10, 90, 30, 20], expected: {count: 4, total: 150, mean: 37.5, min: 10, max: 90, p50: 20, p95: 90}}
+      - {input: [], expected: {count: 0, total: 0, mean: 0, min: null, max: null, p50: null, p95: null}}
+  - id: service_durations
+    description: "run(events): normalize and return duration_stats for each service's duration_ms values."
+    scope: feature
+    dependencies: [normalize_events, group_records, duration_stats]
+    cases:
+      - input: *events
+        expected: &latencies
+          api: {count: 3, total: 120, mean: 40, min: 10, max: 90, p50: 20, p95: 90}
+          db: {count: 1, total: 30, mean: 30, min: 30, max: 30, p50: 30, p95: 30}
+      - {input: [], expected: {}}
+  - id: error_rates
+    description: "run(events): normalized per-service {count,errors,rate}; error_events defines errors, rate=errors/count rounded six decimals."
+    scope: feature
+    dependencies: [normalize_events, error_events, service_counts]
+    cases:
+      - input: *events
+        expected: &rates {api: {count: 3, errors: 1, rate: 0.333333}, db: {count: 1, errors: 0, rate: 0}}
+      - {input: [], expected: {}}
+  - id: status_counts
+    description: "run(list[int]): frequency counts of status_class results."
+    scope: feature
+    dependencies: [status_class, count_values]
+    cases: [{input: [200, 201, 404, 500], expected: {2xx: 2, 4xx: 1, 5xx: 1}}, {input: [], expected: {}}]
+  - id: bucket_counts
+    description: "run({events,width}): count events by time_buckets(timestamp,width), returning string bucket keys."
+    scope: feature
+    dependencies: [normalize_events, time_buckets, count_values]
+    cases: [{input: {events: *events, width: 120}, expected: {"0": 2, "120": 2}}, {input: {events: [], width: 60}, expected: {}}]
+  - id: bucket_error_rates
+    description: "run({events,width}): normalized per-time-bucket {count,errors,rate}, across all services. String bucket keys; same error predicate as error_events."
+    scope: feature
+    dependencies: [normalize_events, time_buckets, error_events]
+    cases:
+      - {input: {events: *events, width: 120}, expected: {"0": {count: 2, errors: 1, rate: 0.5}, "120": {count: 2, errors: 0, rate: 0}}}
+      - {input: {events: [], width: 60}, expected: {}}
+  - id: rolling_mean
+    description: "run({values,window}): one trailing mean per position, using up to positive window values and available prefix. Round six decimals."
+    scope: feature
+    dependencies: [mean_values]
+    cases: [{input: {values: [10, 90, 30, 20], window: 2}, expected: [10, 50, 60, 25]}, {input: {values: [], window: 3}, expected: []}]
+  - id: rolling_errors
+    description: "run({events,window}): trailing count of error events at each input position using up to positive window rows; preserve input order."
+    scope: feature
+    dependencies: [error_events]
+    cases: [{input: {events: *events, window: 2}, expected: [0, 1, 1, 0]}, {input: {events: [], window: 2}, expected: []}]
+  - id: sessionize
+    description: "run({events,gap}): group by present user, sort timestamps ascending, split when next timestamp minus previous exceeds gap. Return [{user,start,end,count}] sorted by user then start. Timestamps are epoch seconds; do not parse them as dates."
+    scope: feature
+    dependencies: [group_records, sort_records]
+    cases:
+      - input: {events: *events, gap: 100}
+        expected: &sessions [{user: u1, start: 0, end: 60, count: 2}, {user: u1, start: 180, end: 180, count: 1}, {user: u2, start: 120, end: 120, count: 1}]
+      - {input: {events: [], gap: 60}, expected: []}
+  - id: join_records
+    description: "run({left,right,key}): stable left join on present key. Each matching right row produces a merged row (right overwrites collisions). Unmatched left rows copied unchanged; absent keys never match."
+    scope: feature
+    dependencies: [group_records]
+    cases:
+      - {input: {left: [{id: a, x: 1}, {id: b}], right: [{id: a, y: 2}, {id: a, y: 3}], key: id}, expected: [{id: a, x: 1, y: 2}, {id: a, x: 1, y: 3}, {id: b}]}
+      - {input: {left: [], right: [], key: id}, expected: []}
+  - id: trace_groups
+    description: "run(list[span]): group by present trace_id and stably sort each group by numeric start, then string id."
+    scope: feature
+    dependencies: [group_records, sort_records]
+    cases:
+      - {input: [{id: b, trace_id: t, start: 5}, {id: a, trace_id: t, start: 0}, {id: z, start: 0}], expected: {t: [{id: a, trace_id: t, start: 0}, {id: b, trace_id: t, start: 5}]}}
+      - {input: [], expected: {}}
+  - id: critical_path
+    description: "run({nodes:[{id,weight}],edges}): for a directed acyclic graph with nonnegative node weights, return {path,weight} for the maximum sum node-weight path (any start/end). Equal-weight paths choose lexicographically smallest full path. Empty graph yields {path:[],weight:0}."
+    scope: feature
+    dependencies: [adjacency]
+    cases:
+      - {input: {nodes: [{id: a, weight: 5}, {id: b, weight: 3}, {id: c, weight: 8}, {id: d, weight: 4}], edges: [[a, b], [a, c], [b, d]]}, expected: {path: [a, c], weight: 13}}
+      - {input: {nodes: [{id: a, weight: 1}, {id: b, weight: 1}], edges: []}, expected: {path: [a], weight: 1}}
+      - {input: {nodes: [], edges: []}, expected: {path: [], weight: 0}}
+  - id: detect_cycles
+    description: "run({nodes,edges}): return whether directed graph contains any cycle, including self-loops and disconnected components."
+    scope: feature
+    dependencies: [adjacency]
+    cases:
+      - {input: {nodes: [a, b, c], edges: [[a, b], [b, a]]}, expected: true}
+      - {input: {nodes: [a], edges: [[a, a]]}, expected: true}
+      - {input: {nodes: [a, b], edges: [[a, b]]}, expected: false}
+  - id: reachable_nodes
+    description: "run({nodes,edges,source}): sorted list of reachable nodes, including source itself even if isolated. Terminate on cycles."
+    scope: feature
+    dependencies: [adjacency, unique_values]
+    cases:
+      - {input: {nodes: [a, b, c, d], edges: [[a, b], [b, c], [c, a]], source: a}, expected: [a, b, c]}
+      - {input: {nodes: [a], edges: [], source: a}, expected: [a]}
+  - id: dependency_layers
+    description: "run({nodes,edges}): Kahn topological layers (each layer is all currently zero-indegree nodes sorted lexicographically), including isolated nodes. Return [] if any cycle exists."
+    scope: feature
+    dependencies: [adjacency, detect_cycles]
+    cases:
+      - {input: {nodes: [a, b, c, d], edges: [[a, b], [a, c], [b, d], [c, d]]}, expected: [[a], [b, c], [d]]}
+      - {input: {nodes: [a, b], edges: [[a, b], [b, a]]}, expected: []}
+      - {input: {nodes: [], edges: []}, expected: []}
+  - id: slo_burn
+    description: "run({events,target}): per-service burn rate = raw errors/count divided by (1-target), where 0<target<1. Round only final result to six decimals, not intermediate error rate."
+    scope: feature
+    dependencies: [error_rates, error_events, service_counts]
+    cases: [{input: {events: *events, target: 0.99}, expected: {api: 33.333333, db: 0}}, {input: {events: [], target: 0.99}, expected: {}}]
+  - id: apdex
+    description: "run({events,threshold}): normalized per-service Apdex (satisfied + tolerating/2)/count. Non-errors duration<=threshold are satisfied; non-errors threshold<duration<=4*threshold tolerate; errors or slower rows frustrate. Round six decimals."
+    scope: feature
+    dependencies: [normalize_events, service_counts, error_events]
+    cases:
+      - {input: {events: *events, threshold: 50}, expected: {api: 0.666667, db: 1}}
+      - {input: {events: [{service: api, duration_ms: 75}], threshold: 50}, expected: {api: 0.5}}
+      - {input: {events: [], threshold: 50}, expected: {}}
+  - id: anomaly_flags
+    description: "run({baseline_values,values,factor}): boolean flag for each value strictly greater than mean(baseline_values)*factor. Empty baseline mean is 0."
+    scope: feature
+    dependencies: [mean_values]
+    cases: [{input: {baseline_values: [10, 10], values: [10, 20, 40], factor: 2}, expected: [false, false, true]}, {input: {baseline_values: [], values: [], factor: 2}, expected: []}]
+  - id: retry_groups
+    description: "run(attempts): group by request_id, sort numeric attempt ascending, return {attempts,failures,recovered} per request. status>=500 fails; recovered means at least one failure followed by a final nonfailure. Other fields ignored."
+    scope: feature
+    dependencies: [group_records, sort_records]
+    cases:
+      - input: &attempts [{request_id: r, attempt: 2, status: 200}, {request_id: r, attempt: 1, status: 500}, {request_id: s, attempt: 1, status: 200}]
+        expected: &retries {r: {attempts: 2, failures: 1, recovered: true}, s: {attempts: 1, failures: 0, recovered: false}}
+      - {input: [], expected: {}}
+  - id: render_jsonl
+    description: "run(rows): compact sorted-key JSON lines, newline after every row; empty yields ''. Use standard json.dumps default escaping."
+    scope: feature
+    dependencies: [parse_jsonl]
+    cases: [{input: [{b: 2, a: 1}], expected: "{\"a\":1,\"b\":2}\n"}, {input: [], expected: ""}]
+  - id: render_csv
+    description: "run({rows,fields}): CSV with given field order, header, standard quoting and LF endings. Missing values empty. Empty rows still emit header."
+    scope: feature
+    dependencies: [parse_csv, project_records]
+    cases:
+      - {input: {rows: [{a: "x,y", b: 2}], fields: [a, b]}, expected: "a,b\n\"x,y\",2\n"}
+      - {input: {rows: [], fields: [a, b]}, expected: "a,b\n"}
+  - id: ingest_jsonl
+    description: "run(JSON-lines string): parse, normalize and deduplicate events by last id occurrence."
+    scope: integration
+    dependencies: [parse_jsonl, normalize_events, dedup_events]
+    cases:
+      - {input: "{\"id\":\"a\",\"service\":\"API\",\"duration_ms\":1}\n{\"id\":\"a\",\"service\":\"DB\",\"duration_ms\":2}\n", expected: [{id: a, service: db, level: INFO, duration_ms: 2, status: 200, timestamp: 0}]}
+      - {input: "", expected: []}
+  - id: ingest_csv
+    description: "run(CSV string): parse, convert present nonblank status/timestamp to int and duration_ms to float (blank numeric fields omitted), then normalize and deduplicate events."
+    scope: integration
+    dependencies: [parse_csv, normalize_events, dedup_events]
+    cases:
+      - {input: "id,service,status,duration_ms,timestamp\na,API,500,12.5,60\n", expected: [{id: a, service: api, level: INFO, status: 500, duration_ms: 12.5, timestamp: 60}]}
+      - {input: "id,service\n", expected: []}
+  - id: health_report
+    description: "run({events,threshold}): {errors:error_rates(events),latency:service_durations(events),apdex:apdex(input)}."
+    scope: integration
+    dependencies: [error_rates, service_durations, apdex]
+    cases:
+      - {input: {events: *events, threshold: 50}, expected: {errors: *rates, latency: *latencies, apdex: {api: 0.666667, db: 1}}}
+      - {input: {events: [], threshold: 50}, expected: {errors: {}, latency: {}, apdex: {}}}
+  - id: traffic_report
+    description: "run(events): normalized traffic summary {services:service_counts,levels:level_counts,statuses:status_counts(all statuses)}."
+    scope: integration
+    dependencies: [service_counts, level_counts, status_counts, normalize_events]
+    cases:
+      - input: *events
+        expected: &traffic {services: {api: 3, db: 1}, levels: {INFO: 2, ERROR: 1, WARN: 1}, statuses: {2xx: 3, 5xx: 1}}
+      - {input: [], expected: {services: {}, levels: {}, statuses: {}}}
+  - id: timeseries_report
+    description: "run({events,width,window}): {counts:bucket_counts,errors:bucket_error_rates,rolling_duration:rolling_mean(input-order duration_ms)}. Normalize events first."
+    scope: integration
+    dependencies: [bucket_counts, bucket_error_rates, rolling_mean, normalize_events]
+    cases:
+      - {input: {events: *events, width: 120, window: 2}, expected: {counts: {"0": 2, "120": 2}, errors: {"0": {count: 2, errors: 1, rate: 0.5}, "120": {count: 2, errors: 0, rate: 0}}, rolling_duration: [10, 50, 60, 25]}}
+      - {input: {events: [], width: 120, window: 2}, expected: {counts: {}, errors: {}, rolling_duration: []}}
+  - id: session_report
+    description: "run({events,gap}): {sessions:sessionize(input),durations:duration_stats(each session end-start)}."
+    scope: integration
+    dependencies: [sessionize, duration_stats]
+    cases:
+      - {input: {events: *events, gap: 100}, expected: {sessions: *sessions, durations: {count: 3, total: 60, mean: 20, min: 0, max: 60, p50: 0, p95: 60}}}
+      - {input: {events: [], gap: 100}, expected: {sessions: [], durations: {count: 0, total: 0, mean: 0, min: null, max: null, p50: null, p95: null}}}
+  - id: trace_report
+    description: "run({spans,nodes,edges}): {groups:trace_groups(spans),critical:critical_path({nodes,edges}),node_count:len(nodes)}. The supplied graph is acyclic."
+    scope: integration
+    dependencies: [trace_groups, critical_path]
+    cases:
+      - {input: {spans: [{id: a, trace_id: t, start: 0}], nodes: [{id: a, weight: 5}, {id: b, weight: 3}], edges: [[a, b]]}, expected: {groups: {t: [{id: a, trace_id: t, start: 0}]}, critical: {path: [a, b], weight: 8}, node_count: 2}}
+      - {input: {spans: [], nodes: [], edges: []}, expected: {groups: {}, critical: {path: [], weight: 0}, node_count: 0}}
+  - id: dependency_report
+    description: "run({nodes,edges,source}): {layers:dependency_layers,reachable:reachable_nodes,cyclic:detect_cycles}. Cyclic graphs still report reachability."
+    scope: integration
+    dependencies: [dependency_layers, reachable_nodes, detect_cycles]
+    cases:
+      - {input: {nodes: [a, b, c, d], edges: [[a, b], [a, c], [b, d], [c, d]], source: a}, expected: {layers: [[a], [b, c], [d]], reachable: [a, b, c, d], cyclic: false}}
+      - {input: {nodes: [a, b], edges: [[a, b], [b, a]], source: a}, expected: {layers: [], reachable: [a, b], cyclic: true}}
+  - id: incident_candidates
+    description: "run({events,target,min_burn,min_p95}): service records {service,error_rate,burn,p95} for burn>=min_burn OR p95>=min_p95; sorted service ascending. Use slo_burn without intermediate rounding."
+    scope: integration
+    dependencies: [error_rates, slo_burn, service_durations]
+    cases:
+      - {input: {events: *events, target: 0.99, min_burn: 2, min_p95: 80}, expected: [{service: api, error_rate: 0.333333, burn: 33.333333, p95: 90}]}
+      - {input: {events: [], target: 0.99, min_burn: 2, min_p95: 80}, expected: []}
+  - id: rank_incidents
+    description: "run({events,target,min_burn,min_p95,limit}): incident_candidates sorted descending burn, then descending p95, then ascending service, truncated to nonnegative limit."
+    scope: integration
+    dependencies: [incident_candidates, sort_records]
+    cases:
+      - {input: {events: *events, target: 0.99, min_burn: 2, min_p95: 80, limit: 5}, expected: [{service: api, error_rate: 0.333333, burn: 33.333333, p95: 90}]}
+      - {input: {events: *events, target: 0.99, min_burn: 2, min_p95: 80, limit: 0}, expected: []}
+  - id: redacted_export
+    description: "run({rows,fields}): redact_records then render_jsonl."
+    scope: integration
+    dependencies: [redact_records, render_jsonl]
+    cases: [{input: {rows: [{a: 1, token: synthetic}], fields: [token]}, expected: "{\"a\":1,\"token\":\"[REDACTED]\"}\n"}, {input: {rows: [], fields: [token]}, expected: ""}]
+  - id: csv_export
+    description: "run({events,fields}): normalize_events then render_csv using specified fields."
+    scope: integration
+    dependencies: [normalize_events, render_csv]
+    cases:
+      - {input: {events: [{service: API}], fields: [service, status]}, expected: "service,status\napi,200\n"}
+      - {input: {events: [], fields: [service]}, expected: "service\n"}
+  - id: compare_windows
+    description: "run({before,after}): per-service (union) {before_count,after_count,before_rate,after_rate,delta}; missing counts/rates=0, delta=after_rate-before_rate rounded six decimals."
+    scope: integration
+    dependencies: [error_rates, service_counts]
+    cases:
+      - input:
+          before: [{service: api, status: 200}, {service: api, status: 500}]
+          after: [{service: api, status: 200}, {service: db, status: 200}]
+        expected: {api: {before_count: 2, after_count: 1, before_rate: 0.5, after_rate: 0, delta: -0.5}, db: {before_count: 0, after_count: 1, before_rate: 0, after_rate: 0, delta: 0}}
+      - {input: {before: [], after: []}, expected: {}}
+  - id: service_inventory
+    description: "run(events): normalize, return [{service,routes,levels}] sorted service; routes are sorted unique present route strings, levels sorted unique."
+    scope: integration
+    dependencies: [normalize_events, unique_values, group_records]
+    cases:
+      - {input: *events, expected: [{service: api, routes: [/x], levels: [ERROR, INFO]}, {service: db, routes: [/q], levels: [WARN]}]}
+      - {input: [], expected: []}
+  - id: route_report
+    description: "run(events): normalize, group by service and present route, return [{service,route,count,error_rate}] sorted service then route. Same error predicate/rate rounding as error_rates."
+    scope: integration
+    dependencies: [normalize_events, error_rates, group_records]
+    cases:
+      - {input: *events, expected: [{service: api, route: /x, count: 3, error_rate: 0.333333}, {service: db, route: /q, count: 1, error_rate: 0}]}
+      - {input: [], expected: []}
+  - id: saturation_report
+    description: "run({events,threshold,p95_limit}): [{service,p95,apdex,saturated}] sorted service, saturated iff p95>p95_limit. Latency uses service_durations."
+    scope: integration
+    dependencies: [service_durations, apdex]
+    cases:
+      - {input: {events: *events, threshold: 50, p95_limit: 80}, expected: [{service: api, p95: 90, apdex: 0.666667, saturated: true}, {service: db, p95: 30, apdex: 1, saturated: false}]}
+      - {input: {events: [], threshold: 50, p95_limit: 80}, expected: []}
+  - id: retry_report
+    description: "run(attempts): {groups:retry_groups,attempt_count:len(input),statuses:status_counts(all status),recovered_requests:number of recovered groups}."
+    scope: integration
+    dependencies: [retry_groups, status_counts]
+    cases:
+      - {input: *attempts, expected: {groups: *retries, attempt_count: 3, statuses: {2xx: 2, 5xx: 1}, recovered_requests: 1}}
+      - {input: [], expected: {groups: {}, attempt_count: 0, statuses: {}, recovered_requests: 0}}
+  - id: audit_report
+    description: "run({jsonl,fields}): {parsed:raw parsed count,retained:ingested/deduplicated count,redacted_fields:number of present field cells redacted across retained rows,services:service_counts(retained rows)}."
+    scope: integration
+    dependencies: [parse_jsonl, ingest_jsonl, redacted_export, service_counts]
+    cases:
+      - {input: {jsonl: "{\"id\":\"a\",\"service\":\"API\",\"token\":\"synthetic1\"}\n{\"id\":\"a\",\"service\":\"API\",\"token\":\"synthetic2\"}", fields: [token]}, expected: {parsed: 2, retained: 1, redacted_fields: 1, services: {api: 1}}}
+      - {input: {jsonl: "", fields: [token]}, expected: {parsed: 0, retained: 0, redacted_fields: 0, services: {}}}
+  - id: service_dashboard
+    description: "run({events,threshold}): {service_count,event_count,error_count,unhealthy_services,traffic}. Unhealthy means Apdex<1; sorted service names. Compose health_report, traffic_report and service_inventory."
+    scope: integration
+    dependencies: [health_report, traffic_report, service_inventory]
+    cases:
+      - {input: {events: *events, threshold: 50}, expected: {service_count: 2, event_count: 4, error_count: 1, unhealthy_services: [api], traffic: *traffic}}
+      - {input: {events: [], threshold: 50}, expected: {service_count: 0, event_count: 0, error_count: 0, unhealthy_services: [], traffic: {services: {}, levels: {}, statuses: {}}}}
+  - id: incident_dashboard
+    description: "run({events,target,min_burn,min_p95,limit,nodes,edges}): {ranked:list of rank_incidents service names,affected:sorted union of graph reachability from each ranked service (including itself),dependency_layers,cyclic}. Supports cyclic graphs."
+    scope: integration
+    dependencies: [rank_incidents, dependency_report, reachable_nodes, detect_cycles]
+    cases:
+      - {input: {events: *events, target: 0.99, min_burn: 2, min_p95: 80, limit: 5, nodes: [api, db], edges: [[api, db]]}, expected: {ranked: [api], affected: [api, db], dependency_layers: [[api], [db]], cyclic: false}}
+      - {input: {events: [], target: 0.99, min_burn: 2, min_p95: 80, limit: 5, nodes: [], edges: []}, expected: {ranked: [], affected: [], dependency_layers: [], cyclic: false}}

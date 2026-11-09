@@ -1,0 +1,7 @@
+extends: ../distributed-minimal.yaml
+name: pilot-distributed-minimal
+population: 3
+concurrency: 3
+deadline_seconds: 600
+max_activations: 12
+workload: ../../workloads/smoke.yaml

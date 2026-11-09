@@ -1,0 +1,9 @@
+extends: society.yaml
+name: attribution-regression
+population: 2
+concurrency: 2
+deadline_seconds: 480
+max_activations: 20
+goal: Create a concise welcome note for a fictional volunteer society explaining its
+  purpose, three shared values, and how a new member can help. Deliver a readable
+  Markdown artifact.

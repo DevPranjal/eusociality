@@ -1,0 +1,49 @@
+name: Validate eusociality
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  functional:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install runtime and test dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --constraint requirements.lock -e ".[dev]"
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+      - name: Build isolated runtime fixtures
+        run: |
+          docker build -f docker/proxy.Dockerfile -t institution-lab-proxy:dev .
+          docker build -f docker/worker.Dockerfile -t institution-lab-worker:dev .
+      - name: Check Python
+        run: |
+          python -m ruff check src tests
+          python -m pyright
+          python -m pytest -q
+      - name: Validate curated research
+        run: python research/summarize_public.py
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Build observer
+        working-directory: web
+        run: |
+          npm ci
+          npm run build

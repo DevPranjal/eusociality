@@ -1,0 +1,7 @@
+extends: base.yaml
+name: mechanics-smoke
+population: 2
+concurrency: 2
+deadline_seconds: 480
+max_activations: 8
+workload: ../workloads/smoke.yaml

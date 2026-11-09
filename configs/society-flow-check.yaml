@@ -1,0 +1,7 @@
+extends: society.yaml
+name: society-flow-check
+deadline_seconds: 480
+goal: Create a compact offline HTML guide for a beginner explaining how an AI society
+  works. Explain shared goals, voluntary delegation and peer review. Make the page
+  readable and easy to navigate. Decide the work and acceptance criteria together,
+  then assess whether the delivered guide meets this goal.

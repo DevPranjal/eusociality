@@ -1,0 +1,7 @@
+extends: ../central-institutional.yaml
+name: pilot-central-institutional
+population: 3
+concurrency: 3
+deadline_seconds: 600
+max_activations: 12
+workload: ../../workloads/smoke.yaml

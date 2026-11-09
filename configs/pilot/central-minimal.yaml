@@ -1,0 +1,7 @@
+extends: ../central-minimal.yaml
+name: pilot-central-minimal
+population: 3
+concurrency: 3
+deadline_seconds: 600
+max_activations: 12
+workload: ../../workloads/smoke.yaml

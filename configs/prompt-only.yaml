@@ -1,0 +1,3 @@
+extends: base.yaml
+name: distributed-prompt-only
+enforcement: advisory

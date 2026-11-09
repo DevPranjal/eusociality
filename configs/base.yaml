@@ -1,0 +1,49 @@
+schema_version: 1
+name: distributed-institutional
+coordination: distributed
+enforcement: hard
+population: 10
+concurrency: 4
+deadline_seconds: 900
+max_activations: 12
+recoveries: 1
+prompt_repository: ../prompts
+workload: ../workloads/log-analysis.yaml
+runtime:
+  model: gpt-6.1-sol
+  reasoning_effort: medium
+  max_ai_credits: 200
+  turn_timeout_seconds: 180
+  worker_image: institution-lab-worker:dev
+  proxy_image: institution-lab-proxy:dev
+levels:
+- name: L0
+  completions: 0
+  max_active: 1
+  scopes:
+  - foundation
+  delegate: false
+- name: L1
+  completions: 1
+  max_active: 2
+  scopes:
+  - foundation
+  - feature
+  - integration
+  delegate: true
+- name: L2
+  completions: 3
+  max_active: 3
+  scopes:
+  - foundation
+  - feature
+  - integration
+  delegate: true
+rules:
+- plugin: capabilities
+- plugin: delegation
+- plugin: review_gate
+- plugin: performance
+  parameters:
+    points_per_completion: 1
+- plugin: promotion

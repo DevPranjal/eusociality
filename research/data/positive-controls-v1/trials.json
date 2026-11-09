@@ -1,0 +1,318 @@
+[
+  {
+    "id": "control-global-n3-r0",
+    "family": "resource_control",
+    "repeat": 0,
+    "treatment": "global",
+    "workers": 3,
+    "config_hash": "556506f47be54a4ebf380da8a4ad96fdf8ba2cbf7265d0698c7468d6b9601a53",
+    "population": 3,
+    "coding_capacity": 3,
+    "status": "completed",
+    "goal_status": "completed",
+    "elapsed_seconds": 117.21812200546265,
+    "final_checks_passed": true,
+    "observed_credits": 27.26977,
+    "events": 1921,
+    "event_payload_bytes": 6582748,
+    "body_sequence_sha256": "bd3f3be6192e04f04d8b7710d4b9bdf7d63f7c7ab66faa6bab36e6a9f8e06133",
+    "messages": 9,
+    "message_hhi": 0.35802469135802467,
+    "distinct_authors": 1,
+    "authors": [
+      "worker-00"
+    ],
+    "delivered_tasks": 1,
+    "total_tasks": 1,
+    "resources": {
+      "support": {
+        "capacity": 10,
+        "per_agent_limit": 6,
+        "accounting": "global",
+        "unit": "allocation_units",
+        "used": 8,
+        "by_actor": {
+          "worker-00": 4,
+          "worker-01": 4
+        }
+      }
+    },
+    "aggregate_overshoot": 0
+  },
+  {
+    "id": "control-per_agent-n1-r1",
+    "family": "resource_control",
+    "repeat": 1,
+    "treatment": "per_agent",
+    "workers": 1,
+    "config_hash": "f47906b627b57e8b365ff4b9703fdffde231dbdbfa78464c17861ea37efd668e",
+    "population": 1,
+    "coding_capacity": 1,
+    "status": "completed",
+    "goal_status": "completed",
+    "elapsed_seconds": 85.04375958442688,
+    "final_checks_passed": true,
+    "observed_credits": 4.44855,
+    "events": 350,
+    "event_payload_bytes": 676653,
+    "body_sequence_sha256": "13296e95e3492892e3624d4b5f337820a16bd379c0376609d68765b6289f7519",
+    "messages": 0,
+    "message_hhi": null,
+    "distinct_authors": 1,
+    "authors": [
+      "worker-00"
+    ],
+    "delivered_tasks": 1,
+    "total_tasks": 1,
+    "resources": {
+      "support": {
+        "capacity": 10,
+        "per_agent_limit": 6,
+        "accounting": "per_agent",
+        "unit": "allocation_units",
+        "used": 4,
+        "by_actor": {
+          "worker-00": 4
+        }
+      }
+    },
+    "aggregate_overshoot": 0
+  },
+  {
+    "id": "control-per_agent-n3-r0",
+    "family": "resource_control",
+    "repeat": 0,
+    "treatment": "per_agent",
+    "workers": 3,
+    "config_hash": "0f812f1c5196d7e47bc8c8d18430481c2f332b1d726d6e25105cb3c31d08f0e6",
+    "population": 3,
+    "coding_capacity": 3,
+    "status": "completed",
+    "goal_status": "completed",
+    "elapsed_seconds": 187.58210134506226,
+    "final_checks_passed": true,
+    "observed_credits": 49.052369999999996,
+    "events": 2716,
+    "event_payload_bytes": 10061289,
+    "body_sequence_sha256": "01198223c6a1560a1c035e802c505d57c87f4fb87e455cfe14cd0bfaa5030740",
+    "messages": 16,
+    "message_hhi": 0.3515625,
+    "distinct_authors": 1,
+    "authors": [
+      "worker-00"
+    ],
+    "delivered_tasks": 1,
+    "total_tasks": 1,
+    "resources": {
+      "support": {
+        "capacity": 10,
+        "per_agent_limit": 6,
+        "accounting": "per_agent",
+        "unit": "allocation_units",
+        "used": 8,
+        "by_actor": {
+          "worker-00": 6,
+          "worker-01": 2
+        }
+      }
+    },
+    "aggregate_overshoot": 0
+  },
+  {
+    "id": "control-per_agent-n3-r1",
+    "family": "resource_control",
+    "repeat": 1,
+    "treatment": "per_agent",
+    "workers": 3,
+    "config_hash": "58772d9a77b6424e5e627b79069f4120b863c7706ca1c2880580573dc853c7f6",
+    "population": 3,
+    "coding_capacity": 3,
+    "status": "completed",
+    "goal_status": "completed",
+    "elapsed_seconds": 118.9741723537445,
+    "final_checks_passed": true,
+    "observed_credits": 36.056079999999994,
+    "events": 2318,
+    "event_payload_bytes": 7581280,
+    "body_sequence_sha256": "e4d399658a2e3e0de091f3f9537da7b20e18fc269424495cc58faca28b663219",
+    "messages": 15,
+    "message_hhi": 0.34222222222222226,
+    "distinct_authors": 1,
+    "authors": [
+      "worker-01"
+    ],
+    "delivered_tasks": 1,
+    "total_tasks": 1,
+    "resources": {
+      "support": {
+        "capacity": 10,
+        "per_agent_limit": 6,
+        "accounting": "per_agent",
+        "unit": "allocation_units",
+        "used": 8,
+        "by_actor": {
+          "worker-00": 4,
+          "worker-01": 4
+        }
+      }
+    },
+    "aggregate_overshoot": 0
+  },
+  {
+    "id": "control-global-n1-r1",
+    "family": "resource_control",
+    "repeat": 1,
+    "treatment": "global",
+    "workers": 1,
+    "config_hash": "8dfa163c963ff136b7811175b0ebecce42da70599d23517d0406fe55adcf9a54",
+    "population": 1,
+    "coding_capacity": 1,
+    "status": "completed",
+    "goal_status": "completed",
+    "elapsed_seconds": 73.61350560188293,
+    "final_checks_passed": true,
+    "observed_credits": 4.49984,
+    "events": 351,
+    "event_payload_bytes": 703195,
+    "body_sequence_sha256": "8fb0ffc47fab157069129c5b197d83e749ebf72634ec7998d79b87680b53daac",
+    "messages": 0,
+    "message_hhi": null,
+    "distinct_authors": 1,
+    "authors": [
+      "worker-00"
+    ],
+    "delivered_tasks": 1,
+    "total_tasks": 1,
+    "resources": {
+      "support": {
+        "capacity": 10,
+        "per_agent_limit": 6,
+        "accounting": "global",
+        "unit": "allocation_units",
+        "used": 4,
+        "by_actor": {
+          "worker-00": 4
+        }
+      }
+    },
+    "aggregate_overshoot": 0
+  },
+  {
+    "id": "control-global-n1-r0",
+    "family": "resource_control",
+    "repeat": 0,
+    "treatment": "global",
+    "workers": 1,
+    "config_hash": "526683127ed15bf6e32bc97b93f5e37fe756d85738b6322fa81efc6a1444fff0",
+    "population": 1,
+    "coding_capacity": 1,
+    "status": "completed",
+    "goal_status": "completed",
+    "elapsed_seconds": 71.48001980781555,
+    "final_checks_passed": true,
+    "observed_credits": 4.03195,
+    "events": 323,
+    "event_payload_bytes": 593993,
+    "body_sequence_sha256": "57273147e260b3bcc1ce36f439235dc33746ccda0337a704a29d969d64160f5d",
+    "messages": 0,
+    "message_hhi": null,
+    "distinct_authors": 1,
+    "authors": [
+      "worker-00"
+    ],
+    "delivered_tasks": 1,
+    "total_tasks": 1,
+    "resources": {
+      "support": {
+        "capacity": 10,
+        "per_agent_limit": 6,
+        "accounting": "global",
+        "unit": "allocation_units",
+        "used": 4,
+        "by_actor": {
+          "worker-00": 4
+        }
+      }
+    },
+    "aggregate_overshoot": 0
+  },
+  {
+    "id": "control-global-n3-r1",
+    "family": "resource_control",
+    "repeat": 1,
+    "treatment": "global",
+    "workers": 3,
+    "config_hash": "fd6ac31f0f51fa3a37bda7e0e3cbd32334e2c4bba3fc328e78e21706ba8a7b32",
+    "population": 3,
+    "coding_capacity": 3,
+    "status": "completed",
+    "goal_status": "completed",
+    "elapsed_seconds": 103.54392409324646,
+    "final_checks_passed": true,
+    "observed_credits": 27.689310000000003,
+    "events": 2054,
+    "event_payload_bytes": 6884205,
+    "body_sequence_sha256": "e193bb0bf66812c923ee61b115beed3ae7c58e612217a272e7b3e3b4b4cc3e2c",
+    "messages": 10,
+    "message_hhi": 0.34,
+    "distinct_authors": 1,
+    "authors": [
+      "worker-00"
+    ],
+    "delivered_tasks": 1,
+    "total_tasks": 1,
+    "resources": {
+      "support": {
+        "capacity": 10,
+        "per_agent_limit": 6,
+        "accounting": "global",
+        "unit": "allocation_units",
+        "used": 8,
+        "by_actor": {
+          "worker-00": 4,
+          "worker-01": 4
+        }
+      }
+    },
+    "aggregate_overshoot": 0
+  },
+  {
+    "id": "control-per_agent-n1-r0",
+    "family": "resource_control",
+    "repeat": 0,
+    "treatment": "per_agent",
+    "workers": 1,
+    "config_hash": "aa41c6481ade1ed1d5cdf47750270edeb860cb256e0cb932902d76bb077f3f41",
+    "population": 1,
+    "coding_capacity": 1,
+    "status": "completed",
+    "goal_status": "completed",
+    "elapsed_seconds": 79.27255654335022,
+    "final_checks_passed": true,
+    "observed_credits": 4.627700000000001,
+    "events": 374,
+    "event_payload_bytes": 694548,
+    "body_sequence_sha256": "6e47fc395043113a88059561febea8e78ba122e1245aee40196a05415ee9affe",
+    "messages": 0,
+    "message_hhi": null,
+    "distinct_authors": 1,
+    "authors": [
+      "worker-00"
+    ],
+    "delivered_tasks": 1,
+    "total_tasks": 1,
+    "resources": {
+      "support": {
+        "capacity": 10,
+        "per_agent_limit": 6,
+        "accounting": "per_agent",
+        "unit": "allocation_units",
+        "used": 4,
+        "by_actor": {
+          "worker-00": 4
+        }
+      }
+    },
+    "aggregate_overshoot": 0
+  }
+]

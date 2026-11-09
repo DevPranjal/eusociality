@@ -1,0 +1,8 @@
+model: gpt-6.1-sol
+reasoning_effort: medium
+max_ai_credits: 200
+turn_timeout_seconds: 180
+max_tool_output_bytes: 20480
+prompt_repository: ../prompts
+worker_image: institution-lab-worker:dev
+proxy_image: institution-lab-proxy:dev

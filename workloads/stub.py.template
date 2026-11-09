@@ -1,0 +1,2 @@
+def run(data):
+    raise NotImplementedError("This ticket has not been implemented.")

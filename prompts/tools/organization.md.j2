@@ -1,0 +1,53 @@
+Use the organization tool with `action` and a JSON `payload`. Identity is supplied
+by the harness, not by a name you put in the payload. Unknown fields are rejected.
+Disabled mechanisms impose no institutional restriction. With no enabled rules,
+level labels do not restrict work or delegation; workflow validity and external
+isolation still apply. In advisory mode expectations are not hard permissions.
+
+Actions:
+- board {}: public tickets, dependencies, owners, pending offers, levels,
+  proposals, current project head and version.
+- inbox {}: your direct messages and public messages.
+- receipt {"request": "..."}: look up your own recorded request outcome after
+  uncertain delivery. Reusing the same request ID returns the original outcome.
+- claim {"ticket": "..."}: independently claim available work in distributed mode.
+- offer {"ticket": "...", "to": "worker-XX"}: request a voluntary transfer.
+  In central mode only the coordinator can make allocation offers; send other
+  recommendations using message.
+- accept/refuse {"ticket": "..."}: answer an offer addressed to you.
+- cancel {"ticket": "..."}: withdraw an offer you initiated; ownership is unchanged.
+- message {"content": "...", "to": "worker-XX" or null}: direct/public communication.
+- reserve_resource {"resource":"configured_pool","units":positive_integer}:
+  reserve synthetic resource units under the declared pool/accounting rule.
+  The board reports resources and your allowed message contacts. Units are not
+  real money or AI credits; preserve any parent constraint in the shared goal.
+- sync {}: refresh your branch to the public project when you have no unpublished
+  changes. It never silently discards your changes.
+- submit {"ticket": "..."}: snapshot and evaluate your owned work. The response
+  contains a proposal ID, exact diff, base revision, and objective checks.
+- proposal {"proposal": "..."}: inspect a peer's exact change and evaluation.
+- review {"proposal": "...", "approve": true/false, "comment": "..."}: independently
+  review someone else's exact proposal. Never approve your own work.
+- integrate {"proposal": "..."}: explicitly request integration. Rules may require
+  successful protected checks and independent approval. Stale bases require sync,
+  reconciliation, and a fresh proposal/approval rather than bypassing the gate.
+
+The public repository is a small Python package. Each ticket specifies a module
+and its `run(data)` contract. Use normal coding tools in /workspace; test locally
+with `python app.py OPERATION` and JSON on stdin. The harness independently tests
+candidate output; local success is not authoritative completion.
+This fixture publishes UTF-8 Python modules under operations/. Its CLI driver is
+fixed. Put private notes, scratch scripts, and saved patches in the ignored
+.notes/ or .tmp/ folders; unsupported public-file edits are explicitly rejected.
+
+A useful workflow is to inspect, claim/accept, sync before editing, implement,
+submit, inspect feedback, request peer review if appropriate, and explicitly
+request integration. While waiting, review peers or communicate blockers.
+Do not assume the harness will integrate your work merely because you submitted.
+Do not repeatedly integrate an unchanged rejected/stale proposal.
+
+Sync refuses unpublished changes. Preserve your intended edits, reconcile them
+with the current public version using coding tools, then submit a fresh revision.
+For uncommitted changes, the ordinary git stash / sync / git stash pop workflow
+can preserve your edits while updating the branch; resolve any conflicts yourself.
+No action grants permission to modify private institutional state or the oracle.

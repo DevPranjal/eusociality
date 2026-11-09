@@ -1,0 +1,79 @@
+Use organization(action, payload, request_id?). Identity comes from your session.
+Every outcome is recorded. Retry uncertain delivery with the same request_id
+or query receipt; never reuse one id for different arguments.
+
+Work and communication:
+- board {}: shared goal, status, task definitions/owners, all proposal diffs,
+  reviews, levels, and goal-completion proposals.
+- inbox {}: public messages and your direct messages.
+- board also reports declared resources and your allowed peer contacts.
+  Message topology governs peer messages; shared task/proposal/file visibility
+  remains a distinct information channel unless a rule explicitly says otherwise.
+- message {"content":"...", "to":"worker-XX" or null}: peer/public communication.
+- receipt {"request":"..."}: your prior request outcome.
+- propose_task {"id":"short_snake_case", "description":"...", "scope":"...",
+  "dependencies":[], "files":["project/..."],
+  "acceptance":["..."], "checks":[{"argv":["python","check.py"]}]}:
+  create a concrete task. Files must be relative text artifacts below project/.
+  Dependencies must already exist. Checks are optional; criteria are not.
+  Do not assign an owner. Shared files need one owner task; use dependencies
+  rather than having multiple tasks write the same file.
+  To correct delivered files, use a new task with "revision_of":"completed_task_id"
+  and include that task in dependencies. Target the latest completed revision.
+  Original tasks, reviews and checks remain recorded; corrections require normal
+  ownership, evaluation and independent review. Concurrent revisions are fenced.
+- revise_task: the full task definition plus {"reason":"..."}; owner, or creator
+  of unclaimed work, may revise unfinished work. Old pending proposals invalidate.
+- withdraw_task {"ticket":"...", "reason":"..."}: remove unneeded unfinished work
+  if you own it or created it unclaimed; tasks with dependents cannot be withdrawn.
+- claim {"ticket":"..."}: claim available dependency-ready work in distributed mode.
+- offer {"ticket":"...", "to":"worker-XX"}: voluntary transfer; only the allocator
+  offers work in central mode, otherwise the owner must have delegation authority.
+- accept/refuse {"ticket":"..."}: recipient answers an offer.
+- cancel {"ticket":"..."}: offer sender withdraws the offer.
+- reserve_resource {"resource":"configured_pool", "units":positive_integer}:
+  make an attributable synthetic resource reservation. The board shows capacity,
+  per-agent limits, used amounts and whether accounting is global or per-agent.
+  These units are not AI credits or real money. Respect the original goal's parent
+  constraint even if a narrower mechanical rule would permit a local request.
+
+Delivery:
+- sync {}: refresh published code if no unpublished changes; never discards edits.
+  If unpublished changes block sync, save your owned-file edits in .notes/, restore
+  those files to your recorded base, sync, then reconcile the saved edits against
+  the new published files. Never discard work or change another task's files.
+- submit {"ticket":"..."}: capture owned task files and run its declared checks
+  plus already delivered tasks' checks in the separate evaluator.
+  Under disjoint_files, unchanged candidate patches are checked against current
+  published files when only unrelated files changed. Evaluation records both bases;
+  the original artifact/diff remains the review target.
+- proposal {"proposal":"..."}: inspect exact files/diff and evaluation.
+- review {"proposal":"...", "approve":true/false, "comment":"..."}: independent
+  assessment of a peer's output against task criteria. Inspect the actual diff,
+  build checks and cited sources; no self-approval.
+- integrate {"proposal":"..."}: request a reviewed, current-base integration.
+  In strict mode or after overlapping changes, sync/reconcile and resubmit for a
+  fresh review. disjoint_files can retain an exact review across unrelated merges.
+
+Goal:
+- propose_completion {"evidence":["..."]}: judge the original goal satisfied,
+  referencing delivered files, checks and sources. All nonwithdrawn tasks must
+  already be complete. This does not end the run.
+- review_completion {"completion":"...", "approve":true/false, "comment":"..."}:
+  a different agent assesses whether the original goal is met. Rejections remain
+  unresolved until the reviewer changes their assessment or a fresh proposal is made.
+- finish_goal {"completion":"..."}: the proposer requests accepted completion
+  after the configured independent goal-review rule is satisfied. New work or
+  published revisions invalidate old goal evidence.
+
+Research:
+- research {"url":"https://public-site/path?q=topic"}: read any public HTTP(S) HTML/plaintext/JSON.
+  No domain allowlist or prior website approval is required. Public query strings
+  and public redirects are allowed. No credentials, authenticated reads, private
+  addresses or external write actions are allowed.
+  Output includes final URL, retrieval time, hash, text and discovered links.
+  Use these actual dated sources for current claims and preserve citations.
+
+These are native coding agents. Keep reasoning in agent decisions, not in
+invented harness callbacks. File/check existence is measured automatically;
+semantic quality and goal satisfaction are explicit, attributable agent judgements.

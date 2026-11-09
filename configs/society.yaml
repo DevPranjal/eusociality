@@ -1,0 +1,22 @@
+extends: base.yaml
+name: society
+population: 2
+concurrency: 2
+deadline_seconds: 900
+max_activations: 30
+workload: null
+integration_mode: disjoint_files
+scheduler_mode: workflow
+research:
+  enabled: true
+rules:
+- plugin: capabilities
+- plugin: delegation
+- plugin: review_gate
+- plugin: performance
+  parameters:
+    points_per_completion: 1
+- plugin: promotion
+- plugin: goal_gate
+  parameters:
+    independent_approvals: 1

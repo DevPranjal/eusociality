@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+runs/
+.env
+.env.*
+!.env.example
+node_modules/
+web/observer-functional.png
+# Local guided society drafts, generated task plans and session recordings.
+.eusoc/
+# Generated research runs retain local provider recordings; publish curated data only.
+research/agent-networks/*/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.jsonl
+*.log

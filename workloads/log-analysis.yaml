@@ -1,0 +1,168 @@
+description: >-
+  Build a Python log-analysis package with independent operations and composed
+  reports. Every operations/ID.py exports run(data) and returns JSON-compatible
+  output without mutating input. app.py is the fixed CLI: python app.py ID reads
+  a JSON array of inputs and writes the array of results. Implement the fixed
+  tickets with objective checks and peer review; do not edit the driver.
+scaffold: scaffold
+tickets:
+  - id: lower
+    description: "run(list[str]): lowercase every string, preserving order."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [ERROR, Warn], expected: [error, warn]}, {input: [], expected: []}]
+  - id: upper
+    description: "run(list[str]): uppercase every string, preserving order."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [error, Warn], expected: [ERROR, WARN]}, {input: [], expected: []}]
+  - id: trim
+    description: "run(list[str]): strip leading/trailing whitespace from each string."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [" a ", " b"], expected: [a, b]}, {input: [], expected: []}]
+  - id: words
+    description: "run(str): split on whitespace into words, omitting empty fields."
+    scope: foundation
+    dependencies: []
+    cases: [{input: "a  b\nc", expected: [a, b, c]}, {input: "", expected: []}]
+  - id: json_lines
+    description: "run(str): parse nonblank JSON lines into an array, preserving order."
+    scope: foundation
+    dependencies: []
+    cases: [{input: "{\"x\":1}\n\n{\"x\":2}", expected: [{x: 1}, {x: 2}]}, {input: "", expected: []}]
+  - id: csv_rows
+    description: "run(str): parse header-bearing CSV into dictionaries with string values; use the standard CSV quoting rules."
+    scope: foundation
+    dependencies: []
+    cases: [{input: "a,b\n1,2\n3,4\n", expected: [{a: "1", b: "2"}, {a: "3", b: "4"}]}]
+  - id: field
+    description: "run({rows:list[object],field:str}): return each row's named value; missing fields yield null."
+    scope: foundation
+    dependencies: []
+    cases: [{input: {rows: [{x: 1}, {}], field: x}, expected: [1, null]}]
+  - id: equals
+    description: "run({rows,field,value}): retain rows with that field equal to value, preserving order."
+    scope: foundation
+    dependencies: []
+    cases: [{input: {rows: [{x: 1}, {x: 2}], field: x, value: 2}, expected: [{x: 2}]}]
+  - id: contains
+    description: "run({rows,field,text}): retain rows whose string field contains text, case-sensitive; missing/non-string fields do not match."
+    scope: foundation
+    dependencies: []
+    cases: [{input: {rows: [{m: abc}, {m: xyz}, {}], field: m, text: b}, expected: [{m: abc}]}]
+  - id: range_filter
+    description: "run({rows,field,min,max}): retain rows with a numeric field inclusively between min and max; missing fields do not match."
+    scope: foundation
+    dependencies: []
+    cases: [{input: {rows: [{v: 1}, {v: 2}, {v: 3}, {}], field: v, min: 2, max: 3}, expected: [{v: 2}, {v: 3}]}]
+  - id: sort_rows
+    description: "run({rows,key}): stably sort rows ascending by the specified present numeric/string key."
+    scope: foundation
+    dependencies: []
+    cases: [{input: {rows: [{v: 2}, {v: 1}], key: v}, expected: [{v: 1}, {v: 2}]}]
+  - id: project
+    description: "run({rows,fields}): project each row to requested keys that exist, omitting missing keys."
+    scope: foundation
+    dependencies: []
+    cases: [{input: {rows: [{a: 1, b: 2}, {b: 3}], fields: [a]}, expected: [{a: 1}, {}]}]
+  - id: page
+    description: "run({rows,offset,limit}): return the slice starting at nonnegative offset with at most limit rows."
+    scope: foundation
+    dependencies: []
+    cases: [{input: {rows: [1, 2, 3, 4], offset: 1, limit: 2}, expected: [2, 3]}]
+  - id: count
+    description: "run(list): return its length."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [1, 2], expected: 2}, {input: [], expected: 0}]
+  - id: total
+    description: "run(list[number]): return arithmetic sum; empty input yields 0."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [1, 2, -1], expected: 2}, {input: [], expected: 0}]
+  - id: mean
+    description: "run(list[number]): arithmetic mean; empty input yields 0."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [1, 2, 3], expected: 2}, {input: [], expected: 0}]
+  - id: minmax
+    description: "run(list[number]): return {min:minimum,max:maximum}; empty input yields both null."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [3, 1, 2], expected: {min: 1, max: 3}}, {input: [], expected: {min: null, max: null}}]
+  - id: unique
+    description: "run(list[JSON scalar]): remove duplicates preserving first occurrence order."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [a, b, a], expected: [a, b]}, {input: [], expected: []}]
+  - id: normalize_level
+    description: "run(list[object]): copy each row, normalize a present string level to uppercase, preserve all other fields."
+    scope: foundation
+    dependencies: []
+    cases: [{input: [{level: warn, n: 1}, {n: 2}], expected: [{level: WARN, n: 1}, {n: 2}]}]
+  - id: timestamps
+    description: "run(list[str]): parse ISO8601 timestamps with offsets, output UTC ISO8601 strings using seconds and trailing Z."
+    scope: foundation
+    dependencies: []
+    cases: [{input: ["2026-01-01T01:00:00+01:00", "2026-01-01T00:00:00Z"], expected: ["2026-01-01T00:00:00Z", "2026-01-01T00:00:00Z"]}]
+  - id: clean_words
+    description: "run(list[str]): strip whitespace and lowercase each string; discard empty results. Reuse trim/lower where useful."
+    scope: feature
+    dependencies: [trim, lower]
+    cases: [{input: [" A ", "", " B"], expected: [a, b]}]
+  - id: grouped_count
+    description: "run({rows,key}): return a dictionary mapping each string key value to its count."
+    scope: feature
+    dependencies: [count]
+    cases: [{input: {rows: [{k: a}, {k: b}, {k: a}], key: k}, expected: {a: 2, b: 1}}]
+  - id: grouped_sum
+    description: "run({rows,key,value}): group by string key and sum each group's numeric value field."
+    scope: feature
+    dependencies: [total]
+    cases: [{input: {rows: [{k: a, v: 2}, {k: a, v: 3}, {k: b, v: 1}], key: k, value: v}, expected: {a: 5, b: 1}}]
+  - id: histogram
+    description: "run({values,boundaries}): count values in intervals [b[i],b[i+1]), except last interval includes its upper bound; ignore out-of-range values."
+    scope: feature
+    dependencies: [range_filter]
+    cases: [{input: {values: [-1, 0, 1, 2, 3, 4], boundaries: [0, 2, 4]}, expected: [2, 3]}]
+  - id: render_jsonl
+    description: "run(list[object]): compact JSON, sorted keys, one line per object, newline after each; empty input yields empty string."
+    scope: feature
+    dependencies: [json_lines]
+    cases: [{input: [{b: 2, a: 1}], expected: "{\"a\":1,\"b\":2}\n"}, {input: [], expected: ""}]
+  - id: render_csv
+    description: "run({rows,fields}): CSV with given field order, header, standard quoting, newline line endings; missing values empty."
+    scope: feature
+    dependencies: [csv_rows, project]
+    cases: [{input: {rows: [{a: 1, b: 2}], fields: [a, b]}, expected: "a,b\n1,2\n"}]
+  - id: statistics
+    description: "run(list[number]): return {count,total,mean,min,max} using corresponding operation contracts."
+    scope: feature
+    dependencies: [count, total, mean, minmax]
+    cases: [{input: [1, 2, 3], expected: {count: 3, total: 6, mean: 2, min: 1, max: 3}}]
+  - id: top_counts
+    description: "run({values:list[str],limit:int}): return [{value,count}] sorted by decreasing frequency then ascending value, truncated to limit."
+    scope: feature
+    dependencies: [unique, sort_rows]
+    cases: [{input: {values: [b, a, b, a, c], limit: 2}, expected: [{value: a, count: 2}, {value: b, count: 2}]}]
+  - id: log_report
+    description: "run(JSON-lines string): parse log objects, normalize their level, return counts by uppercase level."
+    scope: integration
+    dependencies: [json_lines, normalize_level, grouped_count]
+    cases: [{input: "{\"level\":\"warn\"}\n{\"level\":\"WARN\"}\n{\"level\":\"info\"}", expected: {WARN: 2, INFO: 1}}]
+  - id: merge_counts
+    description: "run(list[object[str,number]]): sum matching keys across dictionaries; return the merged dictionary."
+    scope: integration
+    dependencies: [grouped_sum]
+    cases: [{input: [{a: 2, b: 1}, {a: 3}], expected: {a: 5, b: 1}}, {input: [], expected: {}}]
+  - id: query
+    description: "run({rows,filter_field,filter_value,sort_key,fields}): equality filter, ascending stable sort, then projection."
+    scope: integration
+    dependencies: [equals, sort_rows, project]
+    cases: [{input: {rows: [{k: a, v: 2}, {k: b, v: 1}, {k: a, v: 0}], filter_field: k, filter_value: a, sort_key: v, fields: [v]}, expected: [{v: 0}, {v: 2}]}]
+  - id: combined_report
+    description: "run({levels:list[str],values:list[number]}): return {levels:frequency counts of uppercase levels, statistics:numeric statistics}."
+    scope: integration
+    dependencies: [upper, grouped_count, statistics]
+    cases: [{input: {levels: [warn, WARN, info], values: [1, 2, 3]}, expected: {levels: {WARN: 2, INFO: 1}, statistics: {count: 3, total: 6, mean: 2, min: 1, max: 3}}}]

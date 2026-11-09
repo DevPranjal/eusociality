@@ -1,0 +1,12 @@
+extends: society.yaml
+name: society-docs-check
+goal: Research current PyTorch releases and selected techniques from official public
+  sources. Build a self-contained static documentation website with an approachable
+  beginner section and an advanced section. Cite dated sources, distinguish observed
+  release facts from general guidance, and keep the site usable offline. Society members
+  should decide the task decomposition and assess delivery together.
+research:
+  enabled: true
+runtime:
+  max_ai_credits: null
+  turn_timeout_seconds: 240

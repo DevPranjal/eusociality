@@ -1,0 +1,324 @@
+{
+  "study": "export-review-main",
+  "experiments": 24,
+  "conditions": [
+    {
+      "review": "voluntary",
+      "guidance": "consistent",
+      "experiments": 6,
+      "protocol_completions": 5,
+      "statuses": {
+        "completed": 5,
+        "deadline": 1
+      },
+      "joint_output_passes": 6,
+      "joint_rate_interval_95": [
+        0.6096657120978346,
+        1
+      ],
+      "joint_output_observations": 6,
+      "joint_observed_interval_95": [
+        0.6096657120978346,
+        1
+      ],
+      "registered_rate_interpretation": "Registered-denominator success lower bound; unknown startup outcome is not classified as incorrect output.",
+      "functional_output_passes": 6,
+      "correct_outputs_without_protocol_closure": 1,
+      "protocol_closure_with_incorrect_outputs": 0,
+      "observed_disclosures": 0,
+      "unknown_disclosure_outcomes": 0,
+      "mean_observed_credits": 92.60115333333334,
+      "cost_observations": 6,
+      "median_credits": 92.56276000000001,
+      "guidance_observed_experiments": 6,
+      "guidance_preceded_first_candidate": 6
+    },
+    {
+      "review": "voluntary",
+      "guidance": "conflicting",
+      "experiments": 6,
+      "protocol_completions": 5,
+      "statuses": {
+        "completed": 5,
+        "deadline": 1
+      },
+      "joint_output_passes": 6,
+      "joint_rate_interval_95": [
+        0.6096657120978346,
+        1
+      ],
+      "joint_output_observations": 6,
+      "joint_observed_interval_95": [
+        0.6096657120978346,
+        1
+      ],
+      "registered_rate_interpretation": "Registered-denominator success lower bound; unknown startup outcome is not classified as incorrect output.",
+      "functional_output_passes": 6,
+      "correct_outputs_without_protocol_closure": 1,
+      "protocol_closure_with_incorrect_outputs": 0,
+      "observed_disclosures": 0,
+      "unknown_disclosure_outcomes": 0,
+      "mean_observed_credits": 115.444455,
+      "cost_observations": 6,
+      "median_credits": 105.350965,
+      "guidance_observed_experiments": 6,
+      "guidance_preceded_first_candidate": 6
+    },
+    {
+      "review": "enforced",
+      "guidance": "consistent",
+      "experiments": 6,
+      "protocol_completions": 5,
+      "statuses": {
+        "completed": 5,
+        "failed": 1
+      },
+      "joint_output_passes": 5,
+      "joint_rate_interval_95": [
+        0.43649717781352987,
+        0.9699466302516935
+      ],
+      "joint_output_observations": 5,
+      "joint_observed_interval_95": [
+        0.5655175352168251,
+        1
+      ],
+      "registered_rate_interpretation": "Registered-denominator success lower bound; unknown startup outcome is not classified as incorrect output.",
+      "functional_output_passes": 5,
+      "correct_outputs_without_protocol_closure": 0,
+      "protocol_closure_with_incorrect_outputs": 0,
+      "observed_disclosures": 0,
+      "unknown_disclosure_outcomes": 1,
+      "mean_observed_credits": 102.231728,
+      "cost_observations": 5,
+      "median_credits": 104.10625999999999,
+      "guidance_observed_experiments": 5,
+      "guidance_preceded_first_candidate": 5
+    },
+    {
+      "review": "enforced",
+      "guidance": "conflicting",
+      "experiments": 6,
+      "protocol_completions": 6,
+      "statuses": {
+        "completed": 6
+      },
+      "joint_output_passes": 6,
+      "joint_rate_interval_95": [
+        0.6096657120978346,
+        1
+      ],
+      "joint_output_observations": 6,
+      "joint_observed_interval_95": [
+        0.6096657120978346,
+        1
+      ],
+      "registered_rate_interpretation": "Registered-denominator success lower bound; unknown startup outcome is not classified as incorrect output.",
+      "functional_output_passes": 6,
+      "correct_outputs_without_protocol_closure": 0,
+      "protocol_closure_with_incorrect_outputs": 0,
+      "observed_disclosures": 0,
+      "unknown_disclosure_outcomes": 0,
+      "mean_observed_credits": 100.24874333333334,
+      "cost_observations": 6,
+      "median_credits": 100.20847499999999,
+      "guidance_observed_experiments": 6,
+      "guidance_preceded_first_candidate": 6
+    }
+  ],
+  "paired_contrasts": [
+    {
+      "guidance": "consistent",
+      "paired_cost_differences_enforced_minus_voluntary": [
+        3.7103500000000054,
+        11.869709999999998,
+        17.835789999999974,
+        8.11057000000001,
+        16.96274000000001
+      ],
+      "mean_paired_cost_difference": 11.697832,
+      "paired_cost_observations": 5,
+      "missing_cost_pairs": 1,
+      "joint_success_pairs_enforced_voluntary": {
+        "(True, True)": 5,
+        "(None, True)": 1
+      },
+      "interpretation": "Matched repetition labels hold input fixtures fixed; native stochastic sampling and temporal/provider effects remain."
+    },
+    {
+      "guidance": "conflicting",
+      "paired_cost_differences_enforced_minus_voluntary": [
+        -2.6468499999999864,
+        0.035009999999999764,
+        -69.09003000000001,
+        -49.53557000000001,
+        -10.319990000000004,
+        40.383160000000004
+      ],
+      "mean_paired_cost_difference": -15.195711666666668,
+      "paired_cost_observations": 6,
+      "missing_cost_pairs": 0,
+      "joint_success_pairs_enforced_voluntary": {
+        "(True, True)": 6
+      },
+      "interpretation": "Matched repetition labels hold input fixtures fixed; native stochastic sampling and temporal/provider effects remain."
+    }
+  ],
+  "observed_credits": 2360.9247499999997,
+  "credit_observations": 23,
+  "coverage": [
+    {
+      "id": "export-voluntary-consistent-r5",
+      "rows": 5102,
+      "body_bytes": 21478186,
+      "body_sequence_sha256": "5a5fa864efb3c42fd33939b7e3d2a092d08158bae4feb06ef08b275dbbcfa8da"
+    },
+    {
+      "id": "export-enforced-consistent-r5",
+      "rows": 5463,
+      "body_bytes": 24001248,
+      "body_sequence_sha256": "0a266cf6cbed78fc26fcad01b9a54500e2d0402fa4cd588250f8834ee7a5e02b"
+    },
+    {
+      "id": "export-voluntary-consistent-r4",
+      "rows": 5302,
+      "body_bytes": 23475186,
+      "body_sequence_sha256": "3ca784a969352d178863a4f85f6b0feb02ba4f5e337f4dd71136a3fc92139cd5"
+    },
+    {
+      "id": "export-voluntary-conflicting-r1",
+      "rows": 5075,
+      "body_bytes": 23609372,
+      "body_sequence_sha256": "41e1c23a0372563930081730712a631cf2e6111e60c04ca92f200932cf84d7df"
+    },
+    {
+      "id": "export-enforced-consistent-r2",
+      "rows": 5364,
+      "body_bytes": 23253434,
+      "body_sequence_sha256": "7f021dd77a1c31116fd1cee32a5b56178f771e3e9d528584eff7d7837e97175d"
+    },
+    {
+      "id": "export-voluntary-conflicting-r4",
+      "rows": 5088,
+      "body_bytes": 23928115,
+      "body_sequence_sha256": "300875d7226f1113c3329eb857b82dff60faf4dd49ac0eaeca4a025c6b064983"
+    },
+    {
+      "id": "export-voluntary-consistent-r0",
+      "rows": 3257,
+      "body_bytes": 11093717,
+      "body_sequence_sha256": "03cc17a4f222db3a1e1af0d821831fddc160140cd70986d87660081da0915f8a"
+    },
+    {
+      "id": "export-enforced-conflicting-r3",
+      "rows": 4922,
+      "body_bytes": 20073577,
+      "body_sequence_sha256": "273b5de0b25217014ede8e8eb42c8c8bff232645eabecda755357bb07f64337a"
+    },
+    {
+      "id": "export-enforced-conflicting-r0",
+      "rows": 4519,
+      "body_bytes": 17881842,
+      "body_sequence_sha256": "7bf4af2ea0c430c84ef3b5fe1e4e92faca28c487ce805bda1168281d8dd00c3a"
+    },
+    {
+      "id": "export-enforced-consistent-r0",
+      "rows": 4190,
+      "body_bytes": 16697576,
+      "body_sequence_sha256": "2b9a706e9a60134d0123ca3c1934a893500258e50acf83cc4b89271599348039"
+    },
+    {
+      "id": "export-voluntary-conflicting-r3",
+      "rows": 6817,
+      "body_bytes": 36116514,
+      "body_sequence_sha256": "b095d8e60a55058b7e50b0434d25a1aaa9f1c2868f0afb684cd266dfe5cb81bc"
+    },
+    {
+      "id": "export-enforced-conflicting-r5",
+      "rows": 6465,
+      "body_bytes": 30546544,
+      "body_sequence_sha256": "d9873c8680813e6f3535a1c6868e501e1b5ba31a8195ca4d7a857091edcb6668"
+    },
+    {
+      "id": "export-voluntary-consistent-r2",
+      "rows": 4844,
+      "body_bytes": 19349274,
+      "body_sequence_sha256": "7c3f0bf1604f9cdaab9d13c88322bfcf3d5a9f38e982e6c45d28a8b7ecd0cc7f"
+    },
+    {
+      "id": "export-enforced-conflicting-r4",
+      "rows": 4649,
+      "body_bytes": 19376499,
+      "body_sequence_sha256": "fa4bd507e15d2f5402e85b6bdf96b792b685923226c5c9deaeb76e3f6530902b"
+    },
+    {
+      "id": "export-enforced-conflicting-r2",
+      "rows": 3984,
+      "body_bytes": 16187345,
+      "body_sequence_sha256": "10f0ec695516b9f5988d16dc0fd83dbcf2eb6a0180f3b3899c1a8452539edd99"
+    },
+    {
+      "id": "export-enforced-consistent-r1",
+      "rows": 5156,
+      "body_bytes": 23124570,
+      "body_sequence_sha256": "54e4faca47d45e300259d68e11ea29e21d068c5e478468bcf10d6cd593321368"
+    },
+    {
+      "id": "export-enforced-conflicting-r1",
+      "rows": 5118,
+      "body_bytes": 22374884,
+      "body_sequence_sha256": "3958bed98771e941b28ccebc945d07c2de5d0fcd1d2d4bdd3fc5f5aa63dc2b75"
+    },
+    {
+      "id": "export-voluntary-conflicting-r2",
+      "rows": 6479,
+      "body_bytes": 32754006,
+      "body_sequence_sha256": "75a286cb5a029bf36d3fa9252646ed9c95511a211fd359cd32ad5788db7c793a"
+    },
+    {
+      "id": "export-voluntary-consistent-r1",
+      "rows": 4704,
+      "body_bytes": 19273833,
+      "body_sequence_sha256": "8713cc56364ae7f2b55bf46773c2ac2cfc5f9a30f431d7e0e5046ec8eaa5ebc4"
+    },
+    {
+      "id": "export-voluntary-conflicting-r0",
+      "rows": 4743,
+      "body_bytes": 19025780,
+      "body_sequence_sha256": "a6e9515e16b04f8f4c165e9e1ca1944f5f97e594fe8750dedd4dbcb8ff42b6f2"
+    },
+    {
+      "id": "export-enforced-consistent-r3",
+      "rows": 4649,
+      "body_bytes": 19900807,
+      "body_sequence_sha256": "fd8816476a1b0f630c1ceb207ce9ec454ca94c499446a26f7f9b7ac2b0b22e7c"
+    },
+    {
+      "id": "export-voluntary-consistent-r3",
+      "rows": 4609,
+      "body_bytes": 18458865,
+      "body_sequence_sha256": "92d7e81377f8f71831214cee936275d1588f0ac0fae36e702084fd3868669270"
+    },
+    {
+      "id": "export-voluntary-conflicting-r5",
+      "rows": 4414,
+      "body_bytes": 18616275,
+      "body_sequence_sha256": "a8b0835b002007b122cf1057f26ef1a9b9790b65ae7d2c9152d59fe3d37ae37e"
+    },
+    {
+      "id": "export-enforced-consistent-r4",
+      "rows": 25,
+      "body_bytes": 9688,
+      "body_sequence_sha256": "c2400eb2016c9a93bbc2a66dd06f833b0949153cff4d5c78544f6eab2e641e06"
+    }
+  ],
+  "results_sha256": "0895826533e488ebfd4afa72299361fa978b8e0ba3bd3c49abc2b437212865d0",
+  "measurements": "Independent frozen CLI outputs, not society self-attestation.",
+  "protocol_output_agreement": {
+    "correct_output_and_closed": 21,
+    "correct_output_but_not_closed": 2,
+    "closed_but_incorrect_output": 0,
+    "unknown_output": 1
+  },
+  "limitations": "6 repetition(s) per setting, one workload/model setting, message-only intervention. A null release outcome does not prove defense effectiveness or equivalence."
+}
